@@ -15,4 +15,3 @@ Windows系统登录密码，侧重Winserver系统。模拟登录功能适用win8
 5. 使用破解出的账户模拟登录RDP过滤无效账户；
 6. 验证成功的即添加到最终结果。
 
-# RDP-Password-checker
