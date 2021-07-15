@@ -403,10 +403,16 @@ def check_rdp(host, username, password, port=3389, domain='', hashes=None):
     # a self-signed X.509 certificate.
 
     # Switching to TLS now
-    ctx = SSL.Context(SSL.TLSv1_2_METHOD)
-    ctx.set_cipher_list(b'RC4,AES')
-    tls = SSL.Connection(ctx,s)
-    tls.set_connect_state()
+    if is_high_plat:
+        from OpenSSL import SSL
+        ctx = SSL.Context(SSL.TLSv1_2_METHOD)
+        ctx.set_cipher_list(b'RC4,AES')
+        tls = SSL.Connection(ctx,s)
+        tls.set_connect_state()
+    else:
+        import ssl
+        tls = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1, ciphers='RC4')
+
     tls.do_handshake()
 
     # If you want to use Python internal ssl, uncomment this and comment 
@@ -459,7 +465,12 @@ def check_rdp(host, username, password, port=3389, domain='', hashes=None):
     type3, exportedSessionKey = ntlm.getNTLMSSPType3(auth, ts_request['NegoData'], username, password, domain, lmhash, nthash, use_ntlmv2 = True)
 
     # Get server public key
-    server_cert =  tls.get_peer_certificate()
+    if is_high_plat:
+        server_cert = tls.get_peer_certificate()   
+    else:
+        cert_bin = tls.getpeercert(True)
+        server_cert = crypto.load_certificate(crypto.FILETYPE_ASN1, cert_bin)
+
     pkey = server_cert.get_pubkey()
     dump = crypto.dump_privatekey(crypto.FILETYPE_ASN1, pkey)
 
