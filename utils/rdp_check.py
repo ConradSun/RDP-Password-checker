@@ -354,7 +354,7 @@ class SPNEGOCipher:
 
         return signature, answer
 
-def check_rdp(host, username, password, port=3389, domain='', hashes=None):
+def check_rdp(host, username, password, port=3389, is_high_plat=True, domain="", hashes=None):
     err_msg = ''
     if hashes is not None:
         lmhash, nthash = hashes.split(':')
