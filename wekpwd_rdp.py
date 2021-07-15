@@ -38,6 +38,29 @@ class RdpChecker():
         ntlm.update(passwd.encode("utf-16le"))
         hash = ntlm.hexdigest()
         return hash
+    
+    def change_rdp_status(self, set_value):
+        """change_rdp_status 修改系统注册表中控制 RDP 开启或关闭项
+        为方便单元测试编写的函数接口，本模块未使用
+
+        Args:
+            set_value (DWORD): [设置值：0表示开启，1表示关闭]
+        Returns:
+            None
+        """
+        rdp_set_key = "SYSTEM\\CurrentControlSet\\Control\\Terminal Server"  # 查询子键
+        rdp_set_item = "fDenyTSConnections"    # 查询项
+
+        try:
+            if is_x64_platform():
+                query_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, rdp_set_key, 0, winreg.KEY_WOW64_64KEY | winreg.KEY_ALL_ACCESS)
+            else:
+                query_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, rdp_set_key, 0, winreg.KEY_WOW64_32KEY | winreg.KEY_ALL_ACCESS)
+            winreg.SetValueEx(query_key, rdp_set_item, 0, winreg.REG_DWORD, set_value)
+            winreg.CloseKey(query_key)
+
+        except WindowsError as e:
+            RdpEngine.LOGGER.debug("[rdp] failed in setting RDP status, error: %s", str(e))
 
     def __clear_hive_file(self):
         if os.path.exists(self.SAM_HIVE_PATH):
