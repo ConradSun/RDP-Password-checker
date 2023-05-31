@@ -16,8 +16,8 @@ import utils.exceptions as exception
 from utils.rdp_check import check_rdp
 
 class RdpChecker():
-    SAM_HIVE_PATH = os.path.join(os.path.abspath("./.temp"), "sam.hiv")
-    SYS_HIVE_PATH = os.path.join(os.path.abspath("./.temp"), "sys.hiv")
+    SAM_HIVE_PATH = os.path.abspath("sam.hiv")
+    SYS_HIVE_PATH = os.path.abspath("sys.hiv")
     PASSWD_FILE_PATH = os.path.join(os.path.abspath("./conf"), "passwd.txt")
 
 
